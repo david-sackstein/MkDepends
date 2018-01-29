@@ -1,7 +1,6 @@
 import os
 
 from AndroidMkScanner import AndroidMkScanner
-from Edge import Edge
 from GraphPlotter import GraphPlotter
 from AndroidMk import AndroidMk
 from AndroidModule import AndroidModule
@@ -45,38 +44,19 @@ def read_android_mks():
     return reader.read(root_dir), target
 
 
-def ensure_directory(directory, target_name):
+def ensure_directory(directory, target_name_):
     if not os.path.exists(directory):
         os.makedirs(directory)
-    return os.path.join(directory, target_name)
-
-def get_edges(root, edges, tracked):
-    if root in tracked:
-        return
-    tracked.append(root)
-    for child in root.children:
-
-        get_edges(child, edges, tracked)
-
-        edges.append(Edge(child.name, root.name, "static"))
-    tracked.remove(root)
+    return os.path.join(directory, target_name_)
 
 if __name__ == '__main__':
-    # android_mks, target_name = get_test_android_mks()
-    android_mks, target_name = read_android_mks()
+    android_mks, target_name = get_test_android_mks()
+    # android_mks, target_name = read_android_mks()
 
     tree_builder = TreeBuilder(android_mks)
 
-    edges = tree_builder.find_dependencies_of(target_name)
-    # edges = tree_builder.build_parents_depend_on_children()
-    # edges = tree_builder.build_children_depend_on_parents()
-
-    # edges = []
-    # root = tree_builder.build_children_depend_on_parents()
-    #
-    # tracked = []
-    # get_edges(root, edges, tracked)
+    root_nodes, leaf_nodes = tree_builder.build()
 
     plotter = GraphPlotter()
     image_name = ensure_directory('images', target_name + '.svg')
-    plotter.create_image(image_name, edges)
+    plotter.create_image(image_name, tree_builder._node_map.values())

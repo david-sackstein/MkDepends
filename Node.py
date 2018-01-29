@@ -2,9 +2,12 @@ class Node:
 
     def __init__(self, name):
         self.name = name
-        self.node_type = "root"
+        self.node_type = "unknown"
         self.children = []
         self.parents = []
+
+    def set_type(self, node_type):
+        self.node_type = node_type
 
     def add_child(self, node):
         self.children.append(node)
@@ -19,4 +22,4 @@ class Node:
         return self.name == other.name
 
     def __repr__(self):
-        return "%s %s (%d children)".format(self.name, self.type, len(self.children))
+        return "%s %s (%d children) (%d parents)" % (self.name, self.node_type, len(self.children), len(self.parents))
